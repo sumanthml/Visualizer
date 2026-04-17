@@ -6,184 +6,140 @@ from src.charts import render_universal_chart
 from groq import Groq
 import time
 
-# 1. GLOBAL UI CONFIGURATION (Ultra-Modern Glassmorphism Theme)
+# 1. ELITE UI CONFIGURATION (Ultra-Wide Glassmorphism)
 st.set_page_config(
     page_title="Universal Visualizer Ultra",
     page_icon="🛡️",
-    layout="wide",
+    layout="wide",  # Solves congested layout
     initial_sidebar_state="expanded"
 )
 
-# Professional CSS Injection for Elite UX
+# Professional CSS for True Black and Spaced UI
 st.markdown("""
     <style>
-    .main { 
-        background-color: #0e1117; 
+    .stApp { background-color: #000000; }
+    .block-container { padding: 2rem 3rem; }
+    [data-testid="stMetricValue"] {
+        background: rgba(255, 255, 255, 0.05);
+        padding: 20px;
+        border-radius: 15px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .stMetric { 
-        background: rgba(255, 255, 255, 0.05); 
-        padding: 15px; 
-        border-radius: 10px; 
-        border: 1px solid rgba(255, 255, 255, 0.1); 
-    }
-    .stButton>button { 
-        width: 100%; 
-        border-radius: 5px; 
-        background: linear-gradient(45deg, #FF4B4B, #FF8F8F); 
-        border: none; 
+    .stTabs [data-baseweb="tab-list"] { gap: 24px; }
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        background-color: rgba(255,255,255,0.05);
+        border-radius: 10px 10px 0 0;
+        padding: 0 20px;
     }
     </style>
     """, unsafe_allow_html=True)
 
-# 2. ZERO-COST AI ORCHESTRATION (Groq + Llama 3.1)
-def initialize_ai():
+# 2. SECURE AI INITIALIZATION
+def get_ai_client():
     if "GROQ_API_KEY" in st.secrets:
         return Groq(api_key=st.secrets["GROQ_API_KEY"])
     return None
 
-client = initialize_ai()
+client = get_ai_client()
 
-# 3. CORE LOGIC & DASHBOARD HEADER
+# 3. MAIN APPLICATION ORCHESTRATOR
 st.title("🛡️ Universal Visualizer Ultra")
-st.markdown("---")
+st.caption("Professional-Grade Data Intelligence & Visualization Suite")
 
-# Persistent state management for history tracking
 if "history" not in st.session_state:
     st.session_state.history = []
 
-# Elite File Ingestion Layer
-with st.container():
-    c1, c2, c3 = st.columns([2, 1, 1])
-    with c1:
-        uploaded_file = st.file_uploader("Drop Enterprise Dataset (CSV, XLSX)", type=["csv", "xlsx"])
-    with c2:
-        st.info("💡 Pro Tip: Use the AI Deep Audit after cleaning for better insights.")
+uploaded_file = st.file_uploader("Upload Enterprise Dataset (CSV, XLSX)", type=["csv", "xlsx"])
 
 if uploaded_file:
-    # High-Performance Data Loading
     try:
-        if uploaded_file.name.endswith('.csv'):
-            df = pd.read_csv(uploaded_file)
-        else:
-            df = pd.read_excel(uploaded_file)
-        
-        # 4. INTELLIGENCE LAYER (Instant Profiling)
+        # High-Performance Data Loading
+        df = pd.read_csv(uploaded_file) if uploaded_file.name.endswith('.csv') else pd.read_excel(uploaded_file)
         profile = get_detailed_profile(df)
         
-        # 5. SIDEBAR: DATA COMMAND CENTER
+        # SIDEBAR: DATA COMMAND CENTER
         with st.sidebar:
-            st.image("https://img.icons8.com/fluency/96/000000/data-configuration.png", width=80)
-            st.header("🏥 Health Center")
-            
-            # Interactive Health Metrics
-            m1, m2 = st.columns(2)
-            m1.metric("Total Rows", profile["shape"][0])
-            m2.metric("Total Nulls", profile["total_nulls"])
+            st.header("🏥 Data Health Audit")
+            c1, c2 = st.columns(2)
+            c1.metric("Rows", profile["shape"][0])
+            c2.metric("Nulls", profile["total_nulls"])
             
             st.markdown("---")
             st.subheader("🛠️ Self-Correction Engine")
-            
-            # Multi-Strategy Cleaning Dashboard
             clean_action = st.selectbox("Intelligence Strategy", [
-                "None", 
-                "Drop All Nulls", 
-                "Drop Duplicate Rows", 
-                "Deep Fill Strategy", 
-                "Remove Outliers (Z-Score)",
-                "Normalize Data (Scaling)"
+                "None", "Drop All Nulls", "Drop Duplicate Rows", 
+                "Deep Fill Strategy", "Remove Outliers (Z-Score)", "Normalize Data"
             ])
             
             if clean_action != "None":
-                with st.spinner("Processing..."):
-                    df = smart_cleaner(df, clean_action)
-                    st.success(f"Action '{clean_action}' Applied!")
-                    # Refresh profile after cleaning
-                    profile = get_detailed_profile(df)
+                df = smart_cleaner(df, clean_action)
+                st.success(f"Strategy '{clean_action}' Applied")
+                profile = get_detailed_profile(df) # Refresh profile
 
             st.markdown("---")
-            st.subheader("🤖 AI Data Analyst")
             if client:
-                if st.button("🚀 Run AI Deep Audit"):
-                    with st.status("Analyzing Dataset Soul...", expanded=True) as status:
-                        prompt = f"As a Senior Data Scientist, analyze this dataset profile: {list(df.columns)}. Focus on missing values ({profile['total_nulls']}) and suggest 3 strategic visualizations."
-                        
-                        response = client.chat.completions.create(
-                            messages=[{"role": "user", "content": prompt}],
-                            model="llama-3.1-8b-instant"
-                        )
-                        analysis = response.choices[0].message.content
-                        st.write(analysis)
-                        status.update(label="Audit Complete!", state="complete", expanded=False)
-                        st.session_state.history.append({"time": time.ctime(), "insight": analysis})
-            else:
-                st.warning("AI Insights disabled: Key missing.")
+                if st.button("🤖 Run AI Deep Audit"):
+                    prompt = f"Analyze this data: {list(df.columns)}. Rows: {df.shape[0]}. Describe 3 key trends."
+                    response = client.chat.completions.create(
+                        messages=[{"role": "user", "content": prompt}],
+                        model="llama-3.1-8b-instant" # Updated 2026 Workhorse
+                    )
+                    insight = response.choices[0].message.content
+                    st.session_state.history.append({"time": time.ctime(), "insight": insight})
+                    st.info(insight)
 
-        # 6. MAIN VISUALIZATION GALLERY (15+ Chart Engine)
-        tabs = st.tabs(["🎨 Visual Studio", "📋 Data Explorer", "🧠 AI History"])
+        # MAIN TABS SYSTEM
+        tab_viz, tab_data, tab_ai = st.tabs(["🎨 Visual Studio", "📋 Data Explorer", "🧠 AI History"])
         
-        with tabs[0]:
-            st.subheader("Chart Designer Ultra")
-            ctrl, view = st.columns([1, 3])
+        with tab_viz:
+            ctrl, view = st.columns([1, 3], gap="large")
             
             with ctrl:
-                # Elite Category Mapping
-                chart_group = st.radio("Chart Category", ["Relationship", "Comparison", "Distribution", "Composition", "Specialized"])
+                st.subheader("Chart Config")
+                category = st.radio("Category", ["Relationship", "Comparison", "Distribution", "Composition", "Specialized"])
                 
-                # Dynamic Filtering based on Category
-                if chart_group == "Relationship":
-                    charts = ["Elite Scatter (4D)", "Bubble Relationship", "Interactive Heatmap", "Density Heatmap"]
-                elif chart_group == "Comparison":
-                    charts = ["Professional Bar", "Line (Time-Series)", "Area (Stacked)", "Radar Chart"]
-                elif chart_group == "Distribution":
-                    charts = ["Advanced Violin", "Box Spread (Outliers)", "High-Density Histogram"]
-                elif chart_group == "Composition":
-                    charts = ["Sunburst (Radial)", "Tree Map (Hierarchical)", "Elite Pie"]
-                else:
-                    charts = ["Parallel Categories", "Spider/Radar Chart"]
-
-                chart_choice = st.selectbox("Select Visual Engine", charts)
-                st.markdown("---")
+                # Dynamic Logic for 15+ Charts
+                chart_map = {
+                    "Relationship": ["Elite Scatter (4D)", "Bubble Relationship", "Interactive Heatmap"],
+                    "Comparison": ["Professional Bar", "Line (Time-Series)", "Area (Stacked)"],
+                    "Distribution": ["Advanced Violin", "Box Spread (Outliers)", "High-Density Histogram"],
+                    "Composition": ["Sunburst (Radial)", "Tree Map (Hierarchical)", "Elite Pie"],
+                    "Specialized": ["Spider/Radar Chart", "Parallel Categories", "Density Heatmap"]
+                }
                 
-                # Smart Axis Mapping (Filters for DType Compatibility)
-                x_col = st.selectbox("Primary Axis (X)", df.columns)
+                chart_type = st.selectbox("Visual Engine", chart_map[category])
+                
+                # Smart Axis Filtering
                 num_cols = [c for c, v in profile["columns"].items() if v["is_numeric"]]
-                cat_cols = [c for c, v in profile["columns"].items() if not v["is_numeric"]]
+                all_cols = list(df.columns)
                 
-                y_col = st.selectbox("Measure Axis (Y)", [None] + num_cols)
-                color_col = st.selectbox("Dimension Mapping (Color)", [None] + list(df.columns))
+                x_axis = st.selectbox("Primary Axis (X)", all_cols)
+                y_axis = st.selectbox("Measure Axis (Y)", [None] + num_cols) # CRITICAL: Null filter
+                color_dim = st.selectbox("Color Mapping", [None] + all_cols)
                 
-                # Advanced Controls for specialized charts
-                size_col = None
-                if "Scatter" in chart_choice or "Bubble" in chart_choice:
-                    size_col = st.selectbox("Magnitude (Size)", [None] + num_cols)
-                
-                facet_col = st.selectbox("Sub-Plot (Facet)", [None] + cat_cols)
+                size_dim = None
+                if "Scatter" in chart_type or "Bubble" in chart_type:
+                    size_dim = st.selectbox("Magnitude (Size)", [None] + num_cols)
 
             with view:
-                # Execution of the Elite Rendering Engine
-                fig = render_universal_chart(df, chart_choice, x_col, y_col, color_col, size_col, facet_col)
+                # Execution of Elite Chart Engine
+                fig = render_universal_chart(df, chart_type, x_axis, y_axis, color_dim, size_dim)
                 if fig:
-                    st.plotly_chart(fig, use_container_width=True, theme=None)
+                    st.plotly_chart(fig, use_container_width=True, config={'displayModeBar': True})
                 
-                # Instant Export Layer
-                col_down1, col_down2 = st.columns(2)
-                col_down1.download_button("📥 Export Cleaned Data", df.to_csv(index=False), "cleaned_data.csv", "text/csv")
-                
-        with tabs[1]:
-            st.subheader("Raw Intelligence Feed")
-            st.dataframe(df, use_container_width=True)
+                st.download_button("📥 Export Cleaned Dataset", df.to_csv(index=False), "cleaned_data.csv")
+
+        with tab_data:
+            st.dataframe(df, use_container_width=True, height=600)
             
-        with tabs[2]:
-            st.subheader("AI Insight Audit Log")
+        with tab_ai:
             for item in reversed(st.session_state.history):
-                with st.expander(f"Audit from {item['time']}"):
-                    st.write(item['insight'])
+                st.write(f"**Audit at {item['time']}**")
+                st.write(item['insight'])
+                st.divider()
 
     except Exception as e:
-        st.error(f"🚨 Universal Loader Error: {str(e)}")
-        st.info("Check if your file format is corrupted or has illegal headers.")
+        st.error(f"Universal Logic Failure: {str(e)}")
 else:
-    # Splash Screen for Empty State
-    st.image("https://img.icons8.com/clouds/200/000000/data-configuration.png")
-    st.header("Welcome to Visualizer Ultra")
-    st.write("Upload a dataset to activate the intelligence engine.")
+    st.info("👋 Welcome. Please upload a dataset in the sidebar to begin the analysis.")
